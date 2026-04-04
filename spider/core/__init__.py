@@ -1,0 +1,1 @@
+"""SPIDER core functionality."""

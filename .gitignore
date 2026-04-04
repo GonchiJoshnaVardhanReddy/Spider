@@ -1,0 +1,9 @@
+# Python cache and test artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local datasets and virtual environments
+Dataset/
+.venv/
+venv/

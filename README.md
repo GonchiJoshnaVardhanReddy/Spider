@@ -7,8 +7,15 @@ Terminal-first AI security agent focused on authorized prompt injection testing 
 ## Installation
 
 ```bash
-cd spider
-pip install -e .
+# 1) Clone the repository
+git clone https://github.com/GonchiJoshnaVardhanReddy/Spider.git
+cd Spider
+
+# 2) Install (Linux)
+python3 -m pip install -e .
+
+# 2) Install (Windows PowerShell)
+py -m pip install -e .
 ```
 
 ## Usage
@@ -17,12 +24,21 @@ pip install -e .
 # Start the agent
 spider
 
+# Start via module (works on Linux and Windows)
+python -m spider
+
 # Uninstall the tool
 spider --uninstall
 
 # Show version
 spider --version
 ```
+
+## Cross-platform notes
+
+- SPIDER is tested to run on both Linux and Windows.
+- Prefer `python -m pip ...` / `py -m pip ...` over plain `pip` for consistent behavior across environments.
+- If `spider` is not on your PATH, use `python -m spider` instead.
 
 ## Commands
 

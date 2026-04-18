@@ -2,8 +2,28 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.mypy_cache/
 
 # Local datasets and virtual environments
 Dataset/
 .venv/
+.venv*/
+.venv312/
 venv/
+ENV/
+env/
+
+# Local/generated artifacts
+.copilot/
+datasets_raw/
+deleted/
+logs/
+memory/
+models_local/
+reports/
+rag/embeddings/
+rag/templates/
+rag/mutation_reservoir/
+docs/superpowers/plans/
+spider/logs/
+spider/memory/data/

@@ -1,0 +1,10 @@
+{
+  "model": "bge-m3",
+  "embedding_model": "BAAI/bge-m3",
+  "embedding_dim": 1024,
+  "normalized": true,
+  "metric": "cosine",
+  "dataset_size": 80000,
+  "batch_size": 64,
+  "max_length": 512
+}

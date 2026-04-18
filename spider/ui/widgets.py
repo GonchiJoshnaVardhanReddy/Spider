@@ -6,6 +6,7 @@ from datetime import datetime
 
 from textual.widgets import Static, Input
 from textual.message import Message
+from textual.timer import Timer
 from rich.text import Text
 
 from spider.ui.theme import COLORS, LOGO
@@ -38,24 +39,24 @@ class TopBar(Static):
 
     def on_mount(self) -> None:
         """Render top bar."""
-        self._render()
+        self._render_top_bar()
 
     def set_mode(self, mode: str) -> None:
         """Update current mode."""
         self._mode = mode
-        self._render()
+        self._render_top_bar()
 
     def set_model(self, model: str) -> None:
         """Update active model."""
         self._model = model
-        self._render()
+        self._render_top_bar()
 
     def set_connected(self, connected: bool) -> None:
         """Update connection status."""
         self._connected = connected
-        self._render()
+        self._render_top_bar()
 
-    def _render(self) -> None:
+    def _render_top_bar(self) -> None:
         """Render the top bar content."""
         text = Text()
         
@@ -73,9 +74,9 @@ class TopBar(Static):
         
         # Status
         if self._connected:
-            text.append(" ready ", style=COLORS["success"])
+            text.append(" CONNECTED ", style=COLORS["success"])
         else:
-            text.append(" offline ", style=COLORS["text_muted"])
+            text.append(" DISCONNECTED ", style=COLORS["text_muted"])
         
         self.update(text)
 
@@ -96,34 +97,50 @@ class StatusBar(Static):
         super().__init__(**kwargs)
         self._tokens = 0
         self._latency = 0
+        self._turns = 0
+        self._confidence = 0.0
 
     def on_mount(self) -> None:
         """Render status bar."""
-        self._render()
+        self._render_status_bar()
 
     def set_tokens(self, count: int) -> None:
         """Update token count."""
         self._tokens = count
-        self._render()
+        self._render_status_bar()
 
     def set_latency(self, ms: int) -> None:
         """Update latency."""
         self._latency = ms
-        self._render()
+        self._render_status_bar()
 
-    def _render(self) -> None:
+    def set_turns(self, turns: int) -> None:
+        """Update active turn count."""
+        self._turns = turns
+        self._render_status_bar()
+
+    def set_confidence(self, confidence: float) -> None:
+        """Update confidence score display."""
+        self._confidence = confidence
+        self._render_status_bar()
+
+    def _render_status_bar(self) -> None:
         """Render status bar content."""
         text = Text()
         text.append(f" tokens: {self._tokens} ", style=COLORS["text_muted"])
         text.append("│", style=COLORS["border"])
         text.append(f" latency: {self._latency}ms ", style=COLORS["text_muted"])
         text.append("│", style=COLORS["border"])
+        text.append(f" turns: {self._turns} ", style=COLORS["text_muted"])
+        text.append("│", style=COLORS["border"])
+        text.append(f" confidence: {self._confidence:.2f} ", style=COLORS["text_muted"])
+        text.append("│", style=COLORS["border"])
         text.append(f" v{VERSION} ", style=COLORS["text_muted"])
         self.update(text)
 
 
 class ChatBanner(Static):
-    """Static banner shown above the chat history."""
+    """Animated ASCII banner shown above the chat history."""
 
     DEFAULT_CSS = """
     ChatBanner {
@@ -135,13 +152,42 @@ class ChatBanner(Static):
     }
     """
 
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._logo_lines = LOGO.splitlines()
+        self._typed_chars = 0
+        self._total_logo_chars = sum(len(line) for line in self._logo_lines)
+        self._typing_timer: Timer | None = None
+
     def on_mount(self) -> None:
-        """Render prompt-injection banner."""
+        """Animate banner text letter by letter."""
+        self._render_banner()
+        self._typing_timer = self.set_interval(0.03, self._animate_banner)
+
+    def _animate_banner(self) -> None:
+        """Advance banner typing effect one character at a time."""
+        if self._typed_chars < self._total_logo_chars:
+            self._typed_chars += 1
+            self._render_banner()
+            return
+        if self._typing_timer is not None:
+            self._typing_timer.pause()
+
+    def _render_banner(self) -> None:
+        """Render current banner state."""
         text = Text()
-        for line in LOGO.splitlines():
-            text.append(line)
+        remaining = self._typed_chars
+        for line in self._logo_lines:
+            visible = max(0, min(len(line), remaining))
+            text.append(line[:visible], style=f"bold {COLORS['accent']}")
+            if visible < len(line):
+                text.append(line[visible:], style=COLORS["border"])
             text.append("\n")
-        text.append("Prompt Injection AI Agent for authorized bug bounty testing.", style=COLORS["text_dim"])
+            remaining -= len(line)
+        text.append(
+            "Prompt Injection AI Agent for authorized bug bounty testing.",
+            style=COLORS["text_dim"],
+        )
         self.update(text)
 
 
@@ -308,6 +354,42 @@ class CommandInput(Input):
         elif self._history_index == len(self._history) - 1:
             self._history_index = len(self._history)
             self.value = ""
+
+
+class InputActivityStatus(Static):
+    """Small activity indicator shown near the input area."""
+
+    DEFAULT_CSS = """
+    InputActivityStatus {
+        width: 100%;
+        height: 1;
+        color: #6c6c6c;
+    }
+    """
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._activity = "ready"
+
+    def on_mount(self) -> None:
+        """Render initial status."""
+        self._render_activity_status()
+
+    def set_activity(self, activity: str) -> None:
+        """Update current input activity text."""
+        self._activity = activity
+        self._render_activity_status()
+
+    def clear_activity(self) -> None:
+        """Reset to idle-ready state."""
+        self._activity = "ready"
+        self._render_activity_status()
+
+    def _render_activity_status(self) -> None:
+        text = Text()
+        text.append("🕷 ", style=COLORS["accent"])
+        text.append(self._activity, style=COLORS["text_dim"])
+        self.update(text)
 
 
 class InputHint(Static):

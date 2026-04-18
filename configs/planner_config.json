@@ -1,0 +1,11 @@
+{
+  "default_model": "spider-planner",
+  "max_turns": 8,
+  "confidence_threshold": 0.9,
+  "fallback_order": [
+    "roleplay",
+    "encoding",
+    "indirect_injection",
+    "override"
+  ]
+}

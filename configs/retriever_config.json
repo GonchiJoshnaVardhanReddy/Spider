@@ -1,0 +1,9 @@
+{
+  "default_top_k": 25,
+  "templates_path": "rag/templates/prompts.json",
+  "metadata_path": "rag/templates/metadata.json",
+  "category_index_path": "rag/templates/category_index.json",
+  "index_path": "rag/embeddings/prompts.index",
+  "mutation_reservoir_path": "rag/mutation_reservoir/mutation_prompts.json",
+  "log_path": "logs/retriever.log"
+}

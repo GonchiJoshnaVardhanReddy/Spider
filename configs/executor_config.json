@@ -1,0 +1,6 @@
+{
+  "connector_type": "openai",
+  "timeout_seconds": 30.0,
+  "retries": 3,
+  "log_path": "logs/executor.log"
+}

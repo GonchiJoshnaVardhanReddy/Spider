@@ -1,0 +1,11 @@
+{
+  "context_poisoning": 0,
+  "encoding": 61485,
+  "general": 21852,
+  "indirect_injection": 15093,
+  "multi_turn_setup": 1,
+  "override": 79962,
+  "roleplay": 301469,
+  "system_leak": 44630,
+  "tool_exploit": 5508
+}
